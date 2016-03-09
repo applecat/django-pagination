@@ -217,6 +217,9 @@ def paginate(context, window=DEFAULT_WINDOW, hashtag=''):
             'paginator': paginator,
             'hashtag': hashtag,
             'is_paginated': paginator.count > paginator.per_page,
+            'pagination_last_page': context.get('pagination_last_page', False),
+            'request': context.get('request', None),
+            'nofollow': context.get('pagination_nofollow', False),
         }
         if 'request' in context:
             getvars = context['request'].GET.copy()
