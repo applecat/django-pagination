@@ -87,12 +87,20 @@ class AutoPaginateNode(template.Node):
         else:
             paginate_by = self.paginate_by.resolve(context)
         paginator = Paginator(value, paginate_by, self.orphans)
+
+        # Get page number or default (1 or last if pagination_last_page is True)
+        pagination_last_page = context.get('pagination_last_page', False)
+        try:
+            page = int(context['request'].GET['page'])
+        except (KeyError, ValueError, TypeError):
+            page = 1 if not pagination_last_page else 'last'
+
         try:
             # page_obj = paginator.page(context['request'].page)
-            if context['request'].page == 'last' or context.get('pagination_last_page', False):
+            if page == 'last':
                 page_number = paginator.num_pages
             else:
-                page_number = context['request'].page
+                page_number = page
             page_obj = paginator.page(page_number)
         except InvalidPage:
             if INVALID_PAGE_RAISES_404:
